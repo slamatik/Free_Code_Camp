@@ -3,6 +3,7 @@ class Category:
         self.category = category
         self.balance = 0
         self.ledger = []
+        self.total_withdraw = 0
 
     def deposit(self, amount, description=""):
         self.balance += amount
@@ -13,6 +14,7 @@ class Category:
         if self.check_funds(amount):
             self.balance -= amount
             self.ledger.append({"amount": -amount, "description": description})
+            self.total_withdraw += amount
             return True
         else:
             return False
@@ -53,7 +55,11 @@ class Category:
 
 
 def create_spend_chart(categories):
-    title = "Percentage spent by category"
+    answer = ['Percentage spent by category']
+    percentage = {100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: [], 20: [], 10: [], 0: []}
+    spendings = {cat.category: cat.total_withdraw for cat in categories}
+    percent_spendings = {cat.category: round(cat.total_withdraw / sum(spendings.values()), 2) for cat in categories}
+
 
 
 food = Category("Food")
@@ -66,6 +72,6 @@ business.deposit(900, "deposit")
 food.withdraw(105.55)
 entertainment.withdraw(33.40)
 business.withdraw(10.99)
-print(create_spend_chart([food, entertainment, business]))
+actual = create_spend_chart([business, food, entertainment])
 expected = "Percentage spent by category\n100|          \n 90|          \n 80|          \n 70|    o     \n 60|    o     \n 50|    o     \n 40|    o     \n 30|    o     \n 20|    o  o  \n 10|    o  o  \n  0| o  o  o  \n    ----------\n     B  F  E  \n     u  o  n  \n     s  o  t  \n     i  d  e  \n     n     r  \n     e     t  \n     s     a  \n     s     i  \n           n  \n           m  \n           e  \n           n  \n           t  "
 print(expected)
